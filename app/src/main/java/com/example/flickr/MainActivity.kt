@@ -23,17 +23,13 @@ class MainActivity : AppCompatActivity() {
         eventsRecyclerView.layoutManager=layoutManager
         eventsRecyclerView.adapter = adapter
         imageViewModel = ViewModelProvider(this).get(ImageViewModel::class.java)
-        adapter.updateData(imageViewModel.list)
+        adapter.updateData(imageViewModel.photoUrls)
         addScrollListener()
-        imageViewModel.data.observe(this, Observer {
+        imageViewModel.livePhotoUrls.observe(this, Observer {
+
             adapter.updateList(it)
         })
         addMoreElements()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        imageViewModel.list=adapter.urls
     }
     private fun itemClicked(item : String) {
         Toast.makeText(this, "Clicked:$item ", Toast.LENGTH_LONG).show()

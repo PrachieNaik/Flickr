@@ -10,8 +10,9 @@ import com.example.flickr.Network.CallBack
 
 class ImageViewModel :ViewModel() {
     private val imageRepository = ImageRepository()
-    private var livePhotoUrls = MutableLiveData<List<Photo>>()
+    var livePhotoUrls = MutableLiveData<List<Photo>>()
     var pageChange = MutableLiveData<Int>()
+    var photoUrls= ArrayList<Photo>()
     var list=ArrayList<Photo>()
     var data = Transformations.switchMap(pageChange) {
         imageRepository.getImageDetails(object : CallBack<ImageDetails> {
@@ -23,14 +24,12 @@ class ImageViewModel :ViewModel() {
                 list?.let {
                     list.photos.photo.let {
                         livePhotoUrls.postValue(it)
+                        photoUrls.addAll(it)
                     }
                     Log.e("livephotourls","${livePhotoUrls.value}")
                 }
             }
         }, it.toString())
-
         livePhotoUrls
     }
-
-
 }
