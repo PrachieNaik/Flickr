@@ -7,4 +7,8 @@ data class Photo (
     var server: String,
     var farm: Int,
     var title: String
-)
+) {
+    fun getUrl() : String {
+        return  "https://farm${farm}.staticflickr.com/${server}/${id}_${secret}_m.jpg"
+    }
+}

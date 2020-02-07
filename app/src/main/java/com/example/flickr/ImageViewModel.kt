@@ -2,19 +2,18 @@ package com.example.flickr
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.example.flickr.Data.ImageDetails
 import com.example.flickr.Data.Photo
 import com.example.flickr.Network.CallBack
 
 class ImageViewModel :ViewModel() {
-    val imageRepository = ImageRepository()
-    var livePhotoUrls = MutableLiveData<String>()
-    var photoList = ArrayList<Photo>()
-    var photoUrls = ArrayList<String>()
-    lateinit var imageDetailsList: ImageDetails
-    fun getImageDetails(id: String) {
-
+    private val imageRepository = ImageRepository()
+    private var livePhotoUrls = MutableLiveData<List<Photo>>()
+    var pageChange = MutableLiveData<Int>()
+    var list=ArrayList<Photo>()
+    var data = Transformations.switchMap(pageChange) {
         imageRepository.getImageDetails(object : CallBack<ImageDetails> {
             override fun onError() {
                 Log.e("EVM", "onError")
@@ -22,19 +21,16 @@ class ImageViewModel :ViewModel() {
 
             override fun onSuccess(list: ImageDetails?) {
                 list?.let {
-
-                    imageDetailsList = (list)
-                    photoList.clear()
-                    photoList.addAll(imageDetailsList.photos.photo)
-                    photoUrls.clear()
-                    for (element in photoList) {
-                        var temp="https://farm" + element.farm + ".staticflickr.com/"+ element.server +
-                                "/" + element.id + "_" + element.secret + "_m.jpg"
-                        photoUrls.add(temp)
-                        livePhotoUrls.postValue(temp)
+                    list.photos.photo.let {
+                        livePhotoUrls.postValue(it)
                     }
+                    Log.e("livephotourls","${livePhotoUrls.value}")
                 }
             }
-        }, id)
+        }, it.toString())
+
+        livePhotoUrls
     }
+
+
 }
